@@ -1,12 +1,23 @@
 package com.paralives.app.presenter;
 
 import com.paralives.app.navigation.ScreenNavigator;
+import com.paralives.engine.settings.AppSettings;
 
 public class AppPresenter {
     private final ScreenNavigator navigator;
+    private final AppSettings settings;
 
     public AppPresenter(ScreenNavigator navigator) {
+        this(navigator, new AppSettings());
+    }
+
+    public AppPresenter(ScreenNavigator navigator, AppSettings settings) {
         this.navigator = navigator;
+        this.settings = settings;
+    }
+
+    public AppSettings getSettings() {
+        return settings;
     }
 
     public void login() {

@@ -3,12 +3,22 @@ package com.paralives.engine.input;
 import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import com.paralives.engine.settings.AppSettings;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class InputHandler implements KeyListener {
     private final Queue<GameCommand> playerACommands = new ConcurrentLinkedQueue<>();
     private final Queue<GameCommand> playerBCommands = new ConcurrentLinkedQueue<>();
+    private final AppSettings settings;
+
+    public InputHandler() {
+        this(new AppSettings());
+    }
+
+    public InputHandler(AppSettings settings) {
+        this.settings = settings;
+    }
 
     public void attach(Component component) {
         component.addKeyListener(this);
@@ -70,24 +80,27 @@ public class InputHandler implements KeyListener {
     }
 
     private GameCommand mapPlayerA(KeyEvent event) {
-        return switch (event.getKeyCode()) {
-            case KeyEvent.VK_W -> GameCommand.MOVE_UP;
-            case KeyEvent.VK_S -> GameCommand.MOVE_DOWN;
-            case KeyEvent.VK_A -> GameCommand.MOVE_LEFT;
-            case KeyEvent.VK_D -> GameCommand.MOVE_RIGHT;
-            case KeyEvent.VK_E -> GameCommand.INTERACT;
-            default -> null;
-        };
+        for (GameCommand command : GameCommand.values()) {
+            if (settings.getPlayerAKey(command) == event.getKeyCode()) {
+                return command;
+            }
+        }
+        return null;
     }
 
     private GameCommand mapPlayerB(KeyEvent event) {
-        return switch (event.getKeyCode()) {
-            case KeyEvent.VK_UP -> GameCommand.MOVE_UP;
-            case KeyEvent.VK_DOWN -> GameCommand.MOVE_DOWN;
-            case KeyEvent.VK_LEFT -> GameCommand.MOVE_LEFT;
-            case KeyEvent.VK_RIGHT -> GameCommand.MOVE_RIGHT;
-            case KeyEvent.VK_ENTER -> GameCommand.INTERACT;
-            default -> null;
-        };
+        for (GameCommand command : GameCommand.values()) {
+            if (settings.getPlayerBKey(command) == event.getKeyCode()) {
+                return command;
+            }
+        }
+        return null;
+    }
+
+    public static String keyName(int keyCode) {
+        if (keyCode == 0) {
+            return "Unbound";
+        }
+        return KeyEvent.getKeyText(keyCode);
     }
 }

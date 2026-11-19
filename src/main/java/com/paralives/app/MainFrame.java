@@ -10,6 +10,7 @@ import com.paralives.app.view.screens.MainMenuScreen;
 import com.paralives.app.view.screens.RegisterScreen;
 import com.paralives.app.view.screens.SaveSlotScreen;
 import com.paralives.app.view.screens.SettingsScreen;
+import com.paralives.engine.settings.AppSettings;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -23,10 +24,12 @@ public class MainFrame extends JFrame implements ScreenNavigator {
     private final CardLayout cardLayout = new CardLayout();
     private final JPanel screenPanel = new JPanel(cardLayout);
     private final AppPresenter presenter;
+    private final AppSettings settings;
 
     public MainFrame() {
         super("ParaLives");
-        presenter = new AppPresenter(this);
+        settings = new AppSettings();
+        presenter = new AppPresenter(this, settings);
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
@@ -43,8 +46,8 @@ public class MainFrame extends JFrame implements ScreenNavigator {
         screenPanel.add(new RegisterScreen(presenter), ScreenNames.REGISTER);
         screenPanel.add(new MainMenuScreen(presenter), ScreenNames.MAIN_MENU);
         screenPanel.add(new SaveSlotScreen(presenter), ScreenNames.SAVE_SLOTS);
-        screenPanel.add(new SettingsScreen(presenter), ScreenNames.SETTINGS);
-        screenPanel.add(new GameScreen(presenter, this), ScreenNames.GAME);
+        screenPanel.add(new SettingsScreen(presenter, settings), ScreenNames.SETTINGS);
+        screenPanel.add(new GameScreen(presenter, this, settings), ScreenNames.GAME);
         screenPanel.add(new LeaderboardScreen(presenter), ScreenNames.LEADERBOARD);
     }
 

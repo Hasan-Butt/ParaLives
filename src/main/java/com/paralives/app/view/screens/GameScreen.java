@@ -4,6 +4,7 @@ import com.paralives.app.presenter.AppPresenter;
 import com.paralives.app.view.BaseScreen;
 import com.paralives.app.view.overlay.PauseOverlay;
 import com.paralives.engine.input.InputHandler;
+import com.paralives.engine.settings.AppSettings;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -13,10 +14,11 @@ import java.awt.Font;
 import java.awt.event.HierarchyEvent;
 
 public class GameScreen extends BaseScreen {
-    private final InputHandler inputHandler = new InputHandler();
+    private final InputHandler inputHandler;
 
-    public GameScreen(AppPresenter presenter, JFrame owner) {
+    public GameScreen(AppPresenter presenter, JFrame owner, AppSettings settings) {
         setFocusable(true);
+        inputHandler = new InputHandler(settings);
         JLabel status = new JLabel("ParaLives - Game", SwingConstants.LEFT);
         status.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
         status.setBounds(40, 20, 400, 40);
