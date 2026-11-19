@@ -19,3 +19,13 @@ Java 25 is the latest Long-Term Support release.
    ```sh
    mvn test
    ```
+
+## Run the Swing Interface
+
+Run the application through an IDE main-class launcher, or compile and launch it with Maven dependencies on the runtime classpath.
+
+```sh
+mvn compile exec:java
+```
+
+Compile and run the Java code only through Maven. Do not use `javac` directly because Maven supplies Hibernate and Jakarta Persistence dependencies; raw `javac` does not.
