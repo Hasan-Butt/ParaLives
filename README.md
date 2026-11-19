@@ -13,6 +13,7 @@ Java 25 is the latest Long-Term Support release.
 - `com.paralives.app.navigation` - Screen navigation contracts
 - `com.paralives.app.view.screens` - Individual Swing screen views
 - `com.paralives.app.view.overlay` - Dialog and secondary-frame views
+- `com.paralives.engine.input` - Dual-player keyboard input and command queues
 
 ## Database Setup
 
