@@ -8,6 +8,11 @@ Java 25 is the latest Long-Term Support release.
 - `com.paralives.db` - Hibernate session factory
 - `com.paralives.db.model` - JPA entities
 - `com.paralives.db.service` - Database operations
+- `com.paralives.app` - Application entry point and main frame
+- `com.paralives.app.presenter` - MVP presenters
+- `com.paralives.app.navigation` - Screen navigation contracts
+- `com.paralives.app.view.screens` - Individual Swing screen views
+- `com.paralives.app.view.overlay` - Dialog and secondary-frame views
 
 ## Database Setup
 
