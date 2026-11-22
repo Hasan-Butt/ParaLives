@@ -12,16 +12,23 @@ public class GameSnapshot implements Serializable {
     private int playerBX;
     private int playerBY;
     private long tick;
+    private DimensionId activeDimension;
 
     public GameSnapshot() {
     }
 
     public GameSnapshot(int playerAX, int playerAY, int playerBX, int playerBY, long tick) {
+        this(playerAX, playerAY, playerBX, playerBY, tick, DimensionId.NORMAL);
+    }
+
+    public GameSnapshot(int playerAX, int playerAY, int playerBX, int playerBY,
+                        long tick, DimensionId activeDimension) {
         this.playerAX = playerAX;
         this.playerAY = playerAY;
         this.playerBX = playerBX;
         this.playerBY = playerBY;
         this.tick = tick;
+        this.activeDimension = activeDimension;
     }
 
     public int getPlayerAX() {
@@ -42,5 +49,9 @@ public class GameSnapshot implements Serializable {
 
     public long getTick() {
         return tick;
+    }
+
+    public DimensionId getActiveDimension() {
+        return activeDimension == null ? DimensionId.NORMAL : activeDimension;
     }
 }

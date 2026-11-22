@@ -16,6 +16,7 @@ Java 25 is the latest Long-Term Support release.
 - `com.paralives.engine.input` - Dual-player keyboard input and command queues
 - `com.paralives.engine.network` - LAN host, client, and serializable input DTO
 - `com.paralives.engine.world` - Authoritative game world and network snapshots
+- `com.paralives.app.view.components.TileRenderer` - Per-dimension tile-grid colored-shape renderer
 - Settings are persisted in `%USERPROFILE%\.paralives\settings.properties`
 
 ## Database Setup

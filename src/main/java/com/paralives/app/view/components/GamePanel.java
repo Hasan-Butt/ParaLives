@@ -1,6 +1,5 @@
 package com.paralives.app.view.components;
 
-import com.paralives.engine.input.GameCommand;
 import com.paralives.engine.input.InputHandler;
 import com.paralives.engine.input.PlayerId;
 import com.paralives.engine.network.GameClient;
@@ -12,7 +11,6 @@ import com.paralives.engine.world.GameWorld;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -20,6 +18,8 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.HierarchyEvent;
+import java.awt.Rectangle;
+import com.paralives.engine.world.TileMap;
 
 public class GamePanel extends JPanel {
     public static final int TARGET_FPS = 60;
@@ -35,6 +35,7 @@ public class GamePanel extends JPanel {
     private final int networkPort;
     private GameServer gameServer;
     private GameClient gameClient;
+    private final TileRenderer tileRenderer = new TileRenderer();
 
     public GamePanel(InputHandler inputHandler) {
         this(inputHandler, NetworkRole.LOCAL, "127.0.0.1", 54545);
@@ -138,6 +139,7 @@ public class GamePanel extends JPanel {
     private void updateLocal() {
         PlayerInput inputA = inputHandler.pollPlayerInput(PlayerId.PLAYER_A);
         PlayerInput inputB = inputHandler.pollPlayerInput(PlayerId.PLAYER_B);
+        toggleDimensionForInteract(inputA, inputB);
         world.update(inputA, inputB, getWidth(), getHeight());
     }
 
@@ -149,6 +151,7 @@ public class GamePanel extends JPanel {
         if (inputB == null) {
             inputB = new PlayerInput();
         }
+        toggleDimensionForInteract(inputA, inputB);
         world.update(inputA, inputB, getWidth(), getHeight());
         if (gameServer != null) {
             gameServer.enqueueState(world.toSnapshot());
@@ -165,6 +168,12 @@ public class GamePanel extends JPanel {
         }
     }
 
+    private void toggleDimensionForInteract(PlayerInput inputA, PlayerInput inputB) {
+        if (inputA.isInteract() || inputB.isInteract()) {
+            world.toggleDimension();
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
@@ -174,22 +183,17 @@ public class GamePanel extends JPanel {
                 RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        drawGrid(graphics2D);
+        TileMap tileMap = world.getActiveTileMap();
+        tileRenderer.render(
+                graphics2D,
+                tileMap,
+                new Rectangle(0, 0),
+                getWidth() / tileMap.getWidth(),
+                getHeight() / tileMap.getHeight());
         drawPlayer(graphics2D, world.getPlayerAX(), world.getPlayerAY(), Color.RED, "A");
         drawPlayer(graphics2D, world.getPlayerBX(), world.getPlayerBY(), Color.BLUE, "B");
 
         graphics2D.dispose();
-    }
-
-    private void drawGrid(Graphics2D graphics) {
-        graphics.setColor(new Color(215, 220, 225));
-        graphics.setStroke(new BasicStroke(1));
-        for (int x = 0; x < getWidth(); x += 40) {
-            graphics.drawLine(x, 0, x, getHeight());
-        }
-        for (int y = 0; y < getHeight(); y += 40) {
-            graphics.drawLine(0, y, getWidth(), y);
-        }
     }
 
     private void drawPlayer(Graphics2D graphics, int x, int y,
