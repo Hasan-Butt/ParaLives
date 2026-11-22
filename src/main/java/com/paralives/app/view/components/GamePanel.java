@@ -36,6 +36,7 @@ public class GamePanel extends JPanel {
     private GameServer gameServer;
     private GameClient gameClient;
     private final TileRenderer tileRenderer = new TileRenderer();
+    private final ObjectRenderer objectRenderer = new ObjectRenderer();
 
     public GamePanel(InputHandler inputHandler) {
         this(inputHandler, NetworkRole.LOCAL, "127.0.0.1", 54545);
@@ -187,6 +188,12 @@ public class GamePanel extends JPanel {
         tileRenderer.render(
                 graphics2D,
                 tileMap,
+                new Rectangle(0, 0),
+                getWidth() / tileMap.getWidth(),
+                getHeight() / tileMap.getHeight());
+        objectRenderer.render(
+                graphics2D,
+                world.getObjectsForActiveDimension(),
                 new Rectangle(0, 0),
                 getWidth() / tileMap.getWidth(),
                 getHeight() / tileMap.getHeight());

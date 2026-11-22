@@ -2,6 +2,8 @@ package com.paralives.engine.world;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GameSnapshot implements Serializable {
     @Serial
@@ -13,6 +15,7 @@ public class GameSnapshot implements Serializable {
     private int playerBY;
     private long tick;
     private DimensionId activeDimension;
+    private List<GameObject> objects = new ArrayList<>();
 
     public GameSnapshot() {
     }
@@ -29,6 +32,14 @@ public class GameSnapshot implements Serializable {
         this.playerBY = playerBY;
         this.tick = tick;
         this.activeDimension = activeDimension;
+    }
+
+    public List<GameObject> getObjects() {
+        return objects;
+    }
+
+    public void setObjects(List<GameObject> objects) {
+        this.objects = objects == null ? new ArrayList<>() : objects;
     }
 
     public int getPlayerAX() {
