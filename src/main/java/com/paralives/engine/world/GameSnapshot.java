@@ -15,6 +15,8 @@ public class GameSnapshot implements Serializable {
     private int playerBY;
     private long tick;
     private DimensionId activeDimension;
+    private DimensionId playerADimension;
+    private DimensionId playerBDimension;
     private List<GameObject> objects = new ArrayList<>();
 
     public GameSnapshot() {
@@ -32,6 +34,8 @@ public class GameSnapshot implements Serializable {
         this.playerBY = playerBY;
         this.tick = tick;
         this.activeDimension = activeDimension;
+        this.playerADimension = activeDimension;
+        this.playerBDimension = activeDimension;
     }
 
     public List<GameObject> getObjects() {
@@ -64,5 +68,23 @@ public class GameSnapshot implements Serializable {
 
     public DimensionId getActiveDimension() {
         return activeDimension == null ? DimensionId.NORMAL : activeDimension;
+    }
+
+    public DimensionId getPlayerADimension() {
+        return playerADimension == null
+                ? getActiveDimension()
+                : playerADimension;
+    }
+
+    public DimensionId getPlayerBDimension() {
+        return playerBDimension == null
+                ? getActiveDimension()
+                : playerBDimension;
+    }
+
+    public void setPlayerDimensions(DimensionId playerADimension,
+                                    DimensionId playerBDimension) {
+        this.playerADimension = playerADimension;
+        this.playerBDimension = playerBDimension;
     }
 }

@@ -16,6 +16,8 @@ public class GameWorld {
     private int playerBY = 230;
     private long tick;
     private DimensionId activeDimension = DimensionId.NORMAL;
+    private DimensionId playerADimension = DimensionId.NORMAL;
+    private DimensionId playerBDimension = DimensionId.NORMAL;
     private final Map<DimensionId, TileMap> dimensionMaps = new EnumMap<>(DimensionId.class);
     private final Map<DimensionId, List<GameObject>> dimensionObjects =
             new EnumMap<>(DimensionId.class);
@@ -103,9 +105,11 @@ public class GameWorld {
         }
         if (inputA.isInteract()) {
             interactPlayer(playerAX, playerAY, width, height);
+            togglePlayerDimension(true);
         }
         if (inputB.isInteract()) {
             interactPlayer(playerBX, playerBY, width, height);
+            togglePlayerDimension(false);
         }
         tick++;
     }
@@ -205,6 +209,7 @@ public class GameWorld {
         GameSnapshot snapshot = new GameSnapshot(
                 playerAX, playerAY, playerBX, playerBY, tick,
                 activeDimension);
+        snapshot.setPlayerDimensions(playerADimension, playerBDimension);
         snapshot.setObjects(copyObjects());
         return snapshot;
     }
@@ -233,6 +238,9 @@ public class GameWorld {
         playerBY = snapshot.getPlayerBY();
         tick = snapshot.getTick();
         activeDimension = snapshot.getActiveDimension();
+        setPlayerDimensions(
+                snapshot.getPlayerADimension(),
+                snapshot.getPlayerBDimension());
         applyObjectState(snapshot.getObjects());
     }
 
@@ -300,5 +308,32 @@ public class GameWorld {
         activeDimension = activeDimension == DimensionId.NORMAL
                 ? DimensionId.POWERED
                 : DimensionId.NORMAL;
+    }
+
+    public void togglePlayerDimension(boolean playerA) {
+        if (playerA) {
+            playerADimension = playerADimension == DimensionId.NORMAL
+                    ? DimensionId.POWERED
+                    : DimensionId.NORMAL;
+            activeDimension = playerADimension;
+        } else {
+            playerBDimension = playerBDimension == DimensionId.NORMAL
+                    ? DimensionId.POWERED
+                    : DimensionId.NORMAL;
+        }
+    }
+
+    public DimensionId getPlayerADimension() {
+        return playerADimension;
+    }
+
+    public DimensionId getPlayerBDimension() {
+        return playerBDimension;
+    }
+
+    public void setPlayerDimensions(DimensionId playerADimension,
+                                    DimensionId playerBDimension) {
+        this.playerADimension = playerADimension;
+        this.playerBDimension = playerBDimension;
     }
 }

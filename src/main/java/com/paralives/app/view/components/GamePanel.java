@@ -37,6 +37,7 @@ public class GamePanel extends JPanel {
     private GameClient gameClient;
     private final TileRenderer tileRenderer = new TileRenderer();
     private final ObjectRenderer objectRenderer = new ObjectRenderer();
+    private final PlayerRenderer playerRenderer = new PlayerRenderer();
 
     public GamePanel(InputHandler inputHandler) {
         this(inputHandler, NetworkRole.LOCAL, "127.0.0.1", 54545);
@@ -140,7 +141,6 @@ public class GamePanel extends JPanel {
     private void updateLocal() {
         PlayerInput inputA = inputHandler.pollPlayerInput(PlayerId.PLAYER_A);
         PlayerInput inputB = inputHandler.pollPlayerInput(PlayerId.PLAYER_B);
-        toggleDimensionForInteract(inputA, inputB);
         world.update(inputA, inputB, getWidth(), getHeight());
     }
 
@@ -152,7 +152,6 @@ public class GamePanel extends JPanel {
         if (inputB == null) {
             inputB = new PlayerInput();
         }
-        toggleDimensionForInteract(inputA, inputB);
         world.update(inputA, inputB, getWidth(), getHeight());
         if (gameServer != null) {
             gameServer.enqueueState(world.toSnapshot());
@@ -166,12 +165,6 @@ public class GamePanel extends JPanel {
             if (snapshot != null) {
                 world.applySnapshot(snapshot);
             }
-        }
-    }
-
-    private void toggleDimensionForInteract(PlayerInput inputA, PlayerInput inputB) {
-        if (inputA.isInteract() || inputB.isInteract()) {
-            world.toggleDimension();
         }
     }
 
@@ -197,23 +190,19 @@ public class GamePanel extends JPanel {
                 new Rectangle(0, 0),
                 getWidth() / tileMap.getWidth(),
                 getHeight() / tileMap.getHeight());
-        drawPlayer(graphics2D, world.getPlayerAX(), world.getPlayerAY(), Color.RED, "A");
-        drawPlayer(graphics2D, world.getPlayerBX(), world.getPlayerBY(), Color.BLUE, "B");
+        playerRenderer.render(
+                graphics2D,
+                world.getPlayerAX(),
+                world.getPlayerAY(),
+                world.getPlayerADimension() == world.getActiveDimension(),
+                true);
+        playerRenderer.render(
+                graphics2D,
+                world.getPlayerBX(),
+                world.getPlayerBY(),
+                world.getPlayerBDimension() == world.getActiveDimension(),
+                false);
 
         graphics2D.dispose();
-    }
-
-    private void drawPlayer(Graphics2D graphics, int x, int y,
-                            Color color, String label) {
-        graphics.setColor(color);
-        graphics.fillOval(
-                x - PLAYER_RADIUS,
-                y - PLAYER_RADIUS,
-                PLAYER_RADIUS * 2,
-                PLAYER_RADIUS * 2);
-
-        graphics.setColor(Color.WHITE);
-        graphics.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
-        graphics.drawString(label, x - 5, y + 5);
     }
 }

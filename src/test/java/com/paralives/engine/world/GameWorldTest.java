@@ -33,4 +33,20 @@ class GameWorldTest {
         assertEquals(400, world.getPlayerBY());
         assertTrue(world.getTick() == 12);
     }
+
+    @Test
+    void tracksEachPlayerDimensionIndependently() {
+        GameWorld world = new GameWorld();
+        world.togglePlayerDimension(true);
+
+        assertEquals(DimensionId.POWERED, world.getPlayerADimension());
+        assertEquals(DimensionId.NORMAL, world.getPlayerBDimension());
+
+        GameSnapshot snapshot = world.toSnapshot();
+        GameWorld restored = new GameWorld();
+        restored.applySnapshot(snapshot);
+
+        assertEquals(DimensionId.POWERED, restored.getPlayerADimension());
+        assertEquals(DimensionId.NORMAL, restored.getPlayerBDimension());
+    }
 }

@@ -18,6 +18,7 @@ Java 25 is the latest Long-Term Support release.
 - `com.paralives.engine.world` - Authoritative game world and network snapshots
 - `com.paralives.app.view.components.TileRenderer` - Per-dimension tile-grid colored-shape renderer
 - `com.paralives.app.view.components.ObjectRenderer` - Key, door, lever, valve, and box shapes
+- `com.paralives.app.view.components.PlayerRenderer` - Alex player sprites with inactive-dimension fading
 - Settings are persisted in `%USERPROFILE%\.paralives\settings.properties`
 
 ## Database Setup
