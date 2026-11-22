@@ -5,6 +5,7 @@ import com.paralives.app.view.BaseScreen;
 import com.paralives.app.view.overlay.AdminPanelFrame;
 
 import javax.swing.JButton;
+import javax.swing.JOptionPane;
 
 public class MainMenuScreen extends BaseScreen {
     public MainMenuScreen(AppPresenter presenter) {
@@ -26,8 +27,45 @@ public class MainMenuScreen extends BaseScreen {
         adminButton.addActionListener(event -> new AdminPanelFrame().setVisible(true));
         add(adminButton);
 
+        JButton hostButton = createButton("Host LAN Game", 515, 190, 250, 50);
+        hostButton.addActionListener(event -> {
+            String portText = JOptionPane.showInputDialog(
+                    this, "Host port:", "54545");
+            if (portText == null) {
+                return;
+            }
+            try {
+                presenter.hostGame(Integer.parseInt(portText.trim()));
+            } catch (NumberFormatException exception) {
+                JOptionPane.showMessageDialog(this, "Enter a valid port.");
+            }
+        });
+        add(hostButton);
+
+        JButton joinButton = createButton("Join LAN Game", 515, 240, 250, 50);
+        joinButton.addActionListener(event -> showJoinDialog(presenter));
+        add(joinButton);
+
         JButton logoutButton = createButton("Logout", 515, 600, 250, 50);
         logoutButton.addActionListener(event -> presenter.logout());
         add(logoutButton);
+    }
+
+    private void showJoinDialog(AppPresenter presenter) {
+        String address = JOptionPane.showInputDialog(
+                this, "Host IP address:", "127.0.0.1");
+        if (address == null) {
+            return;
+        }
+        String portText = JOptionPane.showInputDialog(
+                this, "Host port:", "54545");
+        if (portText == null) {
+            return;
+        }
+        try {
+            presenter.joinGame(address, Integer.parseInt(portText.trim()));
+        } catch (NumberFormatException exception) {
+            JOptionPane.showMessageDialog(this, "Enter a valid port.");
+        }
     }
 }

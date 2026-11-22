@@ -28,7 +28,11 @@ public class GameScreen extends BaseScreen {
         JButton pauseButton = createButton("Pause", 1040, 30, 200, 50);
         add(pauseButton);
 
-        gamePanel = new GamePanel(inputHandler);
+        gamePanel = new GamePanel(
+                inputHandler,
+                presenter.getNetworkRole(),
+                presenter.getNetworkHostAddress(),
+                presenter.getNetworkPort());
         gamePanel.setBounds(100, 100, 1080, 520);
         add(gamePanel);
 

@@ -1,11 +1,15 @@
 package com.paralives.app.presenter;
 
 import com.paralives.app.navigation.ScreenNavigator;
+import com.paralives.engine.network.NetworkRole;
 import com.paralives.engine.settings.AppSettings;
 
 public class AppPresenter {
     private final ScreenNavigator navigator;
     private final AppSettings settings;
+    private NetworkRole networkRole = NetworkRole.LOCAL;
+    private int networkPort = 54545;
+    private String networkHostAddress = "127.0.0.1";
 
     public AppPresenter(ScreenNavigator navigator) {
         this(navigator, new AppSettings());
@@ -18,6 +22,35 @@ public class AppPresenter {
 
     public AppSettings getSettings() {
         return settings;
+    }
+
+    public NetworkRole getNetworkRole() {
+        return networkRole;
+    }
+
+    public int getNetworkPort() {
+        return networkPort;
+    }
+
+    public String getNetworkHostAddress() {
+        return networkHostAddress;
+    }
+
+    public void hostGame(int port) {
+        networkRole = NetworkRole.HOST;
+        networkPort = port;
+        openGame();
+    }
+
+    public void joinGame(String hostAddress, int port) {
+        networkRole = NetworkRole.CLIENT;
+        networkHostAddress = hostAddress.trim();
+        networkPort = port;
+        openGame();
+    }
+
+    public void useLocalGame() {
+        networkRole = NetworkRole.LOCAL;
     }
 
     public void login() {
@@ -37,6 +70,7 @@ public class AppPresenter {
     }
 
     public void openSaveSlots() {
+        useLocalGame();
         navigator.showScreen(com.paralives.app.view.ScreenNames.SAVE_SLOTS);
     }
 

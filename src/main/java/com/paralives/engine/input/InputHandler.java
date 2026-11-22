@@ -4,6 +4,7 @@ import java.awt.Component;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import com.paralives.engine.settings.AppSettings;
+import com.paralives.engine.network.PlayerInput;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -47,6 +48,25 @@ public class InputHandler implements KeyListener {
     public void clear() {
         playerACommands.clear();
         playerBCommands.clear();
+    }
+
+    public PlayerInput pollPlayerInput(PlayerId playerId) {
+        PlayerInput input = new PlayerInput();
+        Queue<GameCommand> commands = playerId == PlayerId.PLAYER_A
+                ? playerACommands
+                : playerBCommands;
+
+        GameCommand command;
+        while ((command = commands.poll()) != null) {
+            switch (command) {
+                case MOVE_UP -> input.setUp(true);
+                case MOVE_DOWN -> input.setDown(true);
+                case MOVE_LEFT -> input.setLeft(true);
+                case MOVE_RIGHT -> input.setRight(true);
+                case INTERACT -> input.setInteract(true);
+            }
+        }
+        return input;
     }
 
     @Override

@@ -2,6 +2,13 @@ package com.paralives.app.view.components;
 
 import com.paralives.engine.input.GameCommand;
 import com.paralives.engine.input.InputHandler;
+import com.paralives.engine.input.PlayerId;
+import com.paralives.engine.network.GameClient;
+import com.paralives.engine.network.GameServer;
+import com.paralives.engine.network.NetworkRole;
+import com.paralives.engine.network.PlayerInput;
+import com.paralives.engine.world.GameSnapshot;
+import com.paralives.engine.world.GameWorld;
 
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -22,14 +29,23 @@ public class GamePanel extends JPanel {
 
     private final InputHandler inputHandler;
     private final Timer gameLoop;
-
-    private int playerAX = 260;
-    private int playerAY = 230;
-    private int playerBX = 820;
-    private int playerBY = 230;
+    private final GameWorld world = new GameWorld();
+    private final NetworkRole networkRole;
+    private final String hostAddress;
+    private final int networkPort;
+    private GameServer gameServer;
+    private GameClient gameClient;
 
     public GamePanel(InputHandler inputHandler) {
+        this(inputHandler, NetworkRole.LOCAL, "127.0.0.1", 54545);
+    }
+
+    public GamePanel(InputHandler inputHandler, NetworkRole networkRole,
+                     String hostAddress, int networkPort) {
         this.inputHandler = inputHandler;
+        this.networkRole = networkRole;
+        this.hostAddress = hostAddress;
+        this.networkPort = networkPort;
         setBackground(new Color(235, 240, 245));
         setDoubleBuffered(true);
         setFocusable(true);
@@ -43,14 +59,48 @@ public class GamePanel extends JPanel {
             }
             if (isShowing()) {
                 inputHandler.attach(this);
+                startNetwork();
                 start();
                 requestFocusInWindow();
             } else {
                 stop();
+                stopNetwork();
                 inputHandler.detach(this);
                 inputHandler.clear();
             }
         });
+    }
+
+    private void startNetwork() {
+        if (networkRole == NetworkRole.HOST) {
+            gameServer = new GameServer();
+            try {
+                gameServer.start(networkPort);
+            } catch (java.io.IOException exception) {
+                gameServer = null;
+            }
+        } else if (networkRole == NetworkRole.CLIENT) {
+            gameClient = new GameClient();
+            Thread.ofVirtual().name("paralives-connect").start(() -> {
+                try {
+                    gameClient.connect(hostAddress, networkPort);
+                } catch (java.io.IOException exception) {
+                    gameClient.close();
+                    gameClient = null;
+                }
+            });
+        }
+    }
+
+    private void stopNetwork() {
+        if (gameServer != null) {
+            gameServer.close();
+            gameServer = null;
+        }
+        if (gameClient != null) {
+            gameClient.close();
+            gameClient = null;
+        }
     }
 
     public void start() {
@@ -75,39 +125,43 @@ public class GamePanel extends JPanel {
     }
 
     private void update(ActionEvent event) {
-        GameCommand command;
-        while ((command = inputHandler.pollPlayerA()) != null) {
-            applyCommand(command, true);
-        }
-        while ((command = inputHandler.pollPlayerB()) != null) {
-            applyCommand(command, false);
+        if (networkRole == NetworkRole.HOST) {
+            updateHost();
+        } else if (networkRole == NetworkRole.CLIENT) {
+            updateClient();
+        } else {
+            updateLocal();
         }
         repaint();
     }
 
-    private void applyCommand(GameCommand command, boolean playerA) {
-        int[] position = playerA
-                ? new int[]{playerAX, playerAY}
-                : new int[]{playerBX, playerBY};
+    private void updateLocal() {
+        PlayerInput inputA = inputHandler.pollPlayerInput(PlayerId.PLAYER_A);
+        PlayerInput inputB = inputHandler.pollPlayerInput(PlayerId.PLAYER_B);
+        world.update(inputA, inputB, getWidth(), getHeight());
+    }
 
-        switch (command) {
-            case MOVE_UP -> position[1] -= PLAYER_SPEED;
-            case MOVE_DOWN -> position[1] += PLAYER_SPEED;
-            case MOVE_LEFT -> position[0] -= PLAYER_SPEED;
-            case MOVE_RIGHT -> position[0] += PLAYER_SPEED;
-            case INTERACT -> {
-            }
+    private void updateHost() {
+        PlayerInput inputA = inputHandler.pollPlayerInput(PlayerId.PLAYER_A);
+        PlayerInput inputB = gameServer == null
+                ? new PlayerInput()
+                : gameServer.pollInput();
+        if (inputB == null) {
+            inputB = new PlayerInput();
         }
+        world.update(inputA, inputB, getWidth(), getHeight());
+        if (gameServer != null) {
+            gameServer.enqueueState(world.toSnapshot());
+        }
+    }
 
-        position[0] = Math.max(PLAYER_RADIUS, Math.min(getWidth() - PLAYER_RADIUS, position[0]));
-        position[1] = Math.max(PLAYER_RADIUS, Math.min(getHeight() - PLAYER_RADIUS, position[1]));
-
-        if (playerA) {
-            playerAX = position[0];
-            playerAY = position[1];
-        } else {
-            playerBX = position[0];
-            playerBY = position[1];
+    private void updateClient() {
+        if (gameClient != null) {
+            gameClient.sendInput(inputHandler.pollPlayerInput(PlayerId.PLAYER_B));
+            GameSnapshot snapshot = gameClient.pollState();
+            if (snapshot != null) {
+                world.applySnapshot(snapshot);
+            }
         }
     }
 
@@ -121,8 +175,8 @@ public class GamePanel extends JPanel {
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
         drawGrid(graphics2D);
-        drawPlayer(graphics2D, playerAX, playerAY, Color.RED, "A");
-        drawPlayer(graphics2D, playerBX, playerBY, Color.BLUE, "B");
+        drawPlayer(graphics2D, world.getPlayerAX(), world.getPlayerAY(), Color.RED, "A");
+        drawPlayer(graphics2D, world.getPlayerBX(), world.getPlayerBY(), Color.BLUE, "B");
 
         graphics2D.dispose();
     }
