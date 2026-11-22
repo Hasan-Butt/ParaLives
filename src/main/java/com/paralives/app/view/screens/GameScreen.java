@@ -3,6 +3,7 @@ package com.paralives.app.view.screens;
 import com.paralives.app.presenter.AppPresenter;
 import com.paralives.app.view.BaseScreen;
 import com.paralives.app.view.overlay.PauseOverlay;
+import com.paralives.app.view.components.GamePanel;
 import com.paralives.engine.input.InputHandler;
 import com.paralives.engine.settings.AppSettings;
 
@@ -11,10 +12,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
-import java.awt.event.HierarchyEvent;
 
 public class GameScreen extends BaseScreen {
     private final InputHandler inputHandler;
+    private final GamePanel gamePanel;
 
     public GameScreen(AppPresenter presenter, JFrame owner, AppSettings settings) {
         setFocusable(true);
@@ -25,25 +26,19 @@ public class GameScreen extends BaseScreen {
         add(status);
 
         JButton pauseButton = createButton("Pause", 1040, 30, 200, 50);
-        pauseButton.addActionListener(event -> new PauseOverlay(owner, presenter).setVisible(true));
         add(pauseButton);
 
-        JLabel gameArea = new JLabel("Game view", SwingConstants.CENTER);
-        gameArea.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 32));
-        gameArea.setBounds(100, 150, 1080, 400);
-        add(gameArea);
+        gamePanel = new GamePanel(inputHandler);
+        gamePanel.setBounds(100, 100, 1080, 520);
+        add(gamePanel);
 
-        addHierarchyListener(event -> {
-            if ((event.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) == 0) {
-                return;
-            }
-
-            if (isShowing()) {
-                inputHandler.attach(this);
-                requestFocusInWindow();
-            } else {
-                inputHandler.detach(this);
-            }
+        pauseButton.addActionListener(event -> {
+            gamePanel.pause();
+            new PauseOverlay(
+                    owner,
+                    presenter,
+                    gamePanel::resume,
+                    gamePanel::pause).setVisible(true);
         });
     }
 

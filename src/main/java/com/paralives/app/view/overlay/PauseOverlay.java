@@ -11,6 +11,14 @@ import javax.swing.SwingConstants;
 import java.awt.Font;
 
 public class PauseOverlay extends JDialog {
+    public PauseOverlay(JFrame owner, AppPresenter presenter,
+                        Runnable resumeAction, Runnable pauseAction) {
+        this(owner, presenter);
+        resumeActionOrDefault = resumeAction;
+    }
+
+    private Runnable resumeActionOrDefault = () -> {};
+
     public PauseOverlay(JFrame owner, AppPresenter presenter) {
         super(owner, "Game Paused", true);
         setResizable(false);
@@ -26,7 +34,10 @@ public class PauseOverlay extends JDialog {
         panel.add(title);
 
         JButton resumeButton = createButton("Resume", 110, 110, 200, 50);
-        resumeButton.addActionListener(event -> dispose());
+        resumeButton.addActionListener(event -> {
+            dispose();
+            resumeActionOrDefault.run();
+        });
         panel.add(resumeButton);
 
         JButton settingsButton = createButton("Settings", 110, 170, 200, 50);
