@@ -4,17 +4,21 @@
         "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
     <session-factory>
-        <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
-        <property name="hibernate.connection.url">jdbc:sqlserver://localhost:1433;databaseName=paralives_db;encrypt=false;trustServerCertificate=true</property>
-        <property name="hibernate.connection.username">SA_USERNAME</property>
-        <property name="hibernate.connection.password">SA_PASSWORD</property>
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/paralives_db</property>
+        <property name="hibernate.connection.username">postgres</property>
+        <property name="hibernate.connection.password">Paralives</property>
 
-        <property name="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
         <property name="hibernate.hbm2ddl.auto">validate</property>
         <property name="hibernate.show_sql">true</property>
         <property name="hibernate.format_sql">true</property>
         <property name="hibernate.current_session_context_class">thread</property>
 
         <mapping class="com.paralives.db.model.Player"/>
+        <mapping class="com.paralives.db.model.SaveSlot"/>
+        <mapping class="com.paralives.db.model.Achievement"/>
+        <mapping class="com.paralives.db.model.Leaderboard"/>
+        <mapping class="com.paralives.db.model.Admin"/>
     </session-factory>
 </hibernate-configuration>
