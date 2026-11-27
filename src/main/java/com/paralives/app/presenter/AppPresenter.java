@@ -53,6 +53,18 @@ public class AppPresenter {
         networkRole = NetworkRole.LOCAL;
     }
 
+    public void openIntro() {
+        navigator.showScreen(com.paralives.app.view.ScreenNames.INTRO);
+    }
+
+    public void finishIntro() {
+        openMainMenu();
+    }
+
+    public void playAnimation(String animationFileName, Runnable onComplete) {
+        navigator.showAnimation(animationFileName, onComplete);
+    }
+
     public void login() {
         navigator.showScreen(com.paralives.app.view.ScreenNames.MAIN_MENU);
     }

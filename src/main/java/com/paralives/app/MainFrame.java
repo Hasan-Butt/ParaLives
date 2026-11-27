@@ -3,6 +3,7 @@ package com.paralives.app;
 import com.paralives.app.navigation.ScreenNavigator;
 import com.paralives.app.presenter.AppPresenter;
 import com.paralives.app.view.ScreenNames;
+import com.paralives.app.view.screens.AnimationScreen;
 import com.paralives.app.view.screens.GameScreen;
 import com.paralives.app.view.screens.LeaderboardScreen;
 import com.paralives.app.view.screens.LoginScreen;
@@ -25,6 +26,7 @@ public class MainFrame extends JFrame implements ScreenNavigator {
     private final JPanel screenPanel = new JPanel(cardLayout);
     private final AppPresenter presenter;
     private final AppSettings settings;
+    private AnimationScreen animationScreen;
 
     public MainFrame() {
         super("ParaLives");
@@ -38,10 +40,16 @@ public class MainFrame extends JFrame implements ScreenNavigator {
 
         registerScreens();
         add(screenPanel);
-        showScreen(ScreenNames.LOGIN);
+        showScreen(ScreenNames.INTRO);
     }
 
     private void registerScreens() {
+        animationScreen = new AnimationScreen(
+                AnimationScreen.animationPath("intro.mp4"),
+                settings,
+                presenter::finishIntro);
+
+        screenPanel.add(animationScreen, ScreenNames.INTRO);
         screenPanel.add(new LoginScreen(presenter), ScreenNames.LOGIN);
         screenPanel.add(new RegisterScreen(presenter), ScreenNames.REGISTER);
         screenPanel.add(new MainMenuScreen(presenter), ScreenNames.MAIN_MENU);
@@ -53,6 +61,15 @@ public class MainFrame extends JFrame implements ScreenNavigator {
 
     @Override
     public void showScreen(String screenName) {
+        if (ScreenNames.INTRO.equals(screenName)) {
+            animationScreen.setVideo(AnimationScreen.animationPath("intro.mp4"), presenter::finishIntro);
+        }
         cardLayout.show(screenPanel, screenName);
+    }
+
+    @Override
+    public void showAnimation(String animationFileName, Runnable onComplete) {
+        animationScreen.setVideo(AnimationScreen.animationPath(animationFileName), onComplete);
+        cardLayout.show(screenPanel, ScreenNames.INTRO);
     }
 }

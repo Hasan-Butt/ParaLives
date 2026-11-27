@@ -1,6 +1,8 @@
 package com.paralives.app.view;
 
 public final class ScreenNames {
+    public static final String INTRO = "INTRO";
+    public static final String ANIMATION = "ANIMATION";
     public static final String LOGIN = "LOGIN";
     public static final String REGISTER = "REGISTER";
     public static final String MAIN_MENU = "MAIN_MENU";
