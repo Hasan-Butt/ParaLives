@@ -24,6 +24,11 @@ class AnimationScreenTest {
     }
 
     @Test
+    void usesPressEnterPromptText() {
+        assertEquals("Press Enter to continue...", AnimationScreen.DEFAULT_PROMPT);
+    }
+
+    @Test
     void returnsNullForMissingAnimationFile() {
         assertNull(AnimationScreen.resolveMediaUri(Path.of("resources", "Animations", "does-not-exist.mp4")));
         assertNull(AnimationScreen.resolveMediaUri(null));

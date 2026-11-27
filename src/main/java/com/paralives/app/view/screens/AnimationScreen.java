@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Full-frame Swing screen backed by an embedded JavaFX MediaPlayer for MP4 animations.
  */
 public class AnimationScreen extends BaseScreen {
-    public static final String DEFAULT_PROMPT = "Press any key to continue...";
+    public static final String DEFAULT_PROMPT = "Press Enter to continue...";
     private static final Path ANIMATIONS_DIR = Path.of("resources", "Animations");
     private static final int INITIAL_WIDTH = 1280;
     private static final int INITIAL_HEIGHT = 720;
@@ -171,7 +172,10 @@ public class AnimationScreen extends BaseScreen {
     }
 
     private boolean dispatchSwingKeyEvent(KeyEvent event) {
-        if (event.getID() == KeyEvent.KEY_PRESSED && readyToAdvance && isShowing()) {
+        if (event.getID() == KeyEvent.KEY_PRESSED
+                && event.getKeyCode() == KeyEvent.VK_ENTER
+                && readyToAdvance
+                && isShowing()) {
             event.consume();
             triggerComplete();
             return true;
@@ -217,7 +221,7 @@ public class AnimationScreen extends BaseScreen {
 
         Scene scene = new Scene(root, INITIAL_WIDTH, INITIAL_HEIGHT, Color.BLACK);
         scene.setOnKeyPressed(event -> {
-            if (readyToAdvance) {
+            if (readyToAdvance && event.getCode() == KeyCode.ENTER) {
                 event.consume();
                 triggerComplete();
             }
