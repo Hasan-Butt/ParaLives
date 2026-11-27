@@ -22,6 +22,15 @@ public class Player {
     @Column(nullable = false, unique = true, length = 255)
     private String email;
 
+    @Column(name = "password_hash", length = 255)
+    private String passwordHash;
+
+    @Column(nullable = false)
+    private Boolean blocked = false;
+
+    @Column(name = "is_guest", nullable = false)
+    private Boolean isGuest = false;
+
     @Column(name = "created_at", nullable = false, insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -31,6 +40,16 @@ public class Player {
     public Player(String name, String email) {
         this.name = name;
         this.email = email;
+        this.blocked = false;
+        this.isGuest = false;
+    }
+
+    public Player(String name, String email, String passwordHash) {
+        this.name = name;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.blocked = false;
+        this.isGuest = false;
     }
 
     public Long getId() {
@@ -55,5 +74,29 @@ public class Player {
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public Boolean getBlocked() {
+        return blocked;
+    }
+
+    public void setBlocked(Boolean blocked) {
+        this.blocked = blocked;
+    }
+
+    public Boolean getIsGuest() {
+        return isGuest;
+    }
+
+    public void setIsGuest(Boolean isGuest) {
+        this.isGuest = isGuest;
     }
 }
